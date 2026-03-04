@@ -7,10 +7,10 @@ import FallbackView from './components/FallbackView.vue'
 import DebugDrawer from './components/DebugDrawer.vue'
 import {
   detectRendererType,
-  RendererType,
+  RENDERER_TYPE,
+  type RendererType,
   type HCResponse,
-  type HCAction,
-  type HCPackResponse
+  type HCAction
 } from './lib/rendererRouter'
 
 const userId = ref('web_user')
@@ -21,7 +21,7 @@ const input = ref('我想管理我的债务')
 const resp = ref<HCResponse | null>(null)
 const loading = ref(false)
 const err = ref<string | null>(null)
-const lastRequest = ref<Record<string, any> | null>(null)
+const lastRequest = ref<Record<string, any> | null | undefined>(null)
 
 function newSession() {
   conversationId.value = `web_${crypto.randomUUID()}`
@@ -62,8 +62,8 @@ function clickAction(a: HCAction) {
   send(a.value)
 }
 
-const currentRenderer = () => {
-  if (!resp.value) return RendererType.FALLBACK
+const currentRenderer = (): RendererType => {
+  if (!resp.value) return RENDERER_TYPE.FALLBACK as RendererType
   return detectRendererType(resp.value)
 }
 
@@ -72,9 +72,6 @@ const rendererName = () => {
   return type.toUpperCase()
 }
 
-function pretty(obj: any) {
-  try { return JSON.stringify(obj, null, 2) } catch { return String(obj) }
-}
 </script>
 
 <template>
@@ -95,7 +92,7 @@ function pretty(obj: any) {
 
     <!-- Error Display -->
     <div v-if="err" style="margin-bottom: 12px; padding: 12px; background: #ffebee; border-left: 4px solid #f44336; color: #c62828; border-radius: 4px; white-space: pre-wrap; font-size: 13px;">
-      ❌ {{ err }}
+      {{ err }}
     </div>
 
     <!-- Response Display (with Router) -->
@@ -130,7 +127,7 @@ function pretty(obj: any) {
     <div style="display:flex; gap:8px; margin-bottom: 16px;">
       <textarea v-model="input" rows="3" style="flex:1; padding:10px; border: 1px solid #ddd; border-radius: 4px; font-family: system-ui;"></textarea>
       <button @click="send(input)" :disabled="loading" style="min-width: 80px; padding: 10px; background: #1976d2; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600;">
-        {{ loading ? '⏳' : '发送' }}
+        {{ loading ? '发送中' : '发送' }}
       </button>
     </div>
 
@@ -147,7 +144,7 @@ function pretty(obj: any) {
       v-if="resp"
       :response="resp"
       :renderer="rendererName()"
-      :lastRequest="lastRequest"
+      :lastRequest="lastRequest?.value ?? undefined"
     />
   </div>
 </template>
@@ -158,3 +155,5 @@ button:disabled {
   cursor: not-allowed;
 }
 </style>
+
+

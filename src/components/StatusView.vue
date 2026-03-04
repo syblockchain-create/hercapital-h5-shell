@@ -42,7 +42,7 @@
 </template>
 
 <script setup lang="ts">
-import type { HCResponse, HCAction, HCCard } from '../lib/rendererRouter'
+import type { HCResponse, HCAction } from '../lib/rendererRouter'
 
 interface Props {
   response: HCResponse
@@ -62,3 +62,4 @@ function formatContent(content: any): string {
   }
 }
 </script>
+

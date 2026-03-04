@@ -4,6 +4,14 @@
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
     "types": ["vite/client"],
 
+    /* Language + Target */
+    "target": "ES2018",
+    "lib": ["ES2018", "DOM"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+
     /* Linting */
     "strict": true,
     "noUnusedLocals": true,

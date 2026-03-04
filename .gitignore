@@ -1,3 +1,10 @@
+node_modules/
+dist/
+.vite/
+.env
+.DS_Store
+tmp_preview.txt
+tmp_status.txt
 # Logs
 logs
 *.log

@@ -38,7 +38,6 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { safeGet } from '../lib/rendererRouter'
 import type { HCResponse, HCAction } from '../lib/rendererRouter'
 
 interface Props {
@@ -52,7 +51,7 @@ const props = defineProps<Props>()
 const content = computed(() => {
   const card = props.response.cards?.[0]
   if (!card) return '暂无可展示内容'
-  
+
   if (typeof card.content === 'string') return card.content
   try {
     return JSON.stringify(card.content, null, 2)
@@ -61,3 +60,4 @@ const content = computed(() => {
   }
 })
 </script>
+

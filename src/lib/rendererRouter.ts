@@ -7,12 +7,14 @@ export function safeGet<T = any>(obj: any, path: string, defaultValue: T): T {
   }
 }
 
-// Renderer type enumeration
-export enum RendererType {
-  PREVIEW = 'preview',
-  DOING = 'doing',
-  STATUS = 'status',
-  FALLBACK = 'fallback'
+// Renderer type (avoid enum for erasableSyntaxOnly compatibility)
+export type RendererType = 'preview' | 'doing' | 'status' | 'fallback'
+
+export const RENDERER_TYPE = {
+  PREVIEW: 'preview' as const,
+  DOING: 'doing' as const,
+  STATUS: 'status' as const,
+  FALLBACK: 'fallback' as const
 }
 
 // Response structure
@@ -42,7 +44,7 @@ export interface HCAction {
 
 // Renderer Detection & Router
 export function detectRendererType(resp: HCResponse): RendererType {
-  if (!resp) return RendererType.FALLBACK
+  if (!resp) return RENDERER_TYPE.FALLBACK
 
   const cards = resp.cards || []
   const meta = resp.meta || {}
@@ -52,52 +54,51 @@ export function detectRendererType(resp: HCResponse): RendererType {
   for (const card of cards) {
     if (card.type === 'preview_card') {
       console.debug('[Router] Matched by card.type=preview_card')
-      return RendererType.PREVIEW
+      return RENDERER_TYPE.PREVIEW
     }
     if (card.type === 'doing_card') {
       console.debug('[Router] Matched by card.type=doing_card')
-      return RendererType.DOING
+      return RENDERER_TYPE.DOING
     }
     if (card.type === 'status_card') {
       console.debug('[Router] Matched by card.type=status_card')
-      return RendererType.STATUS
+      return RENDERER_TYPE.STATUS
     }
   }
 
   // Priority B: Check meta hints
-  const route = safeGet(meta, 'route', '')
-  const phase = safeGet(meta, 'phase', '')
-  const sceneId = safeGet(meta, 'scene_id', '')
+  const route = safeGet(meta, 'route', '') as string
+  const phase = safeGet(meta, 'phase', '') as string
 
   if (route === 'preview' || phase === 'preview') {
     console.debug('[Router] Matched by meta.route/phase=preview')
-    return RendererType.PREVIEW
+    return RENDERER_TYPE.PREVIEW
   }
   if (route === 'doing' || phase === 'doing' || phase === 'executing') {
     console.debug('[Router] Matched by meta.route/phase=doing')
-    return RendererType.DOING
+    return RENDERER_TYPE.DOING
   }
   if (route === 'status' || phase === 'status') {
     console.debug('[Router] Matched by meta.route/phase=status')
-    return RendererType.STATUS
+    return RENDERER_TYPE.STATUS
   }
 
   // Priority C: Heuristic on header content
   const normalizedHeader = header.toLowerCase()
   if (normalizedHeader.includes('预览') || normalizedHeader.includes('方案')) {
     console.debug('[Router] Matched by header heuristic (preview)')
-    return RendererType.PREVIEW
+    return RENDERER_TYPE.PREVIEW
   }
   if (normalizedHeader.includes('执行中') || normalizedHeader.includes('进行中') || normalizedHeader.includes('开始执行')) {
     console.debug('[Router] Matched by header heuristic (doing)')
-    return RendererType.DOING
+    return RENDERER_TYPE.DOING
   }
   if (normalizedHeader.includes('状态') || normalizedHeader.includes('完成')) {
     console.debug('[Router] Matched by header heuristic (status)')
-    return RendererType.STATUS
+    return RENDERER_TYPE.STATUS
   }
 
   // Final fallback
   console.debug('[Router] No match, using fallback')
-  return RendererType.FALLBACK
+  return RENDERER_TYPE.FALLBACK
 }
