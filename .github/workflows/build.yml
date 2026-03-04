@@ -1,32 +1,21 @@
-name: Build CI
-
+name: h5-shell-ci
 on:
   push:
-    branches: [ main, feat/* ]
+    branches: [ "main" ]
   pull_request:
-    branches: [ main ]
-
+    branches: [ "main" ]
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Use Node
+        uses: actions/setup-node@v4
         with:
-          node-version: '18'
-          cache: 'npm'
-      
-      - name: Install dependencies
+          node-version: "20"
+          cache: "npm"
+      - name: Install
         run: npm ci
-      
       - name: Build
         run: npm run build
-      
-      - name: Upload dist artifacts
-        if: success()
-        uses: actions/upload-artifact@v3
-        with:
-          name: dist
-          path: dist/
