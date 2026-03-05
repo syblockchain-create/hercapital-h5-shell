@@ -64,6 +64,28 @@
           <div style="font-weight: 600; margin-bottom: 4px;">renderer</div>
           <div style="opacity: 0.7;">{{ renderer }}</div>
         </div>
+
+        <details style="margin-top: 12px;">
+          <summary style="cursor: pointer; font-weight: 600;">Raw Response JSON</summary>
+          <div style="margin-top: 8px;">
+            <button
+              @click="copyRawResponse"
+              style="
+                padding: 6px 10px;
+                background: #616161;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: 11px;
+                margin-bottom: 8px;
+              "
+            >
+              {{ copied ? '已复制' : '复制 Raw JSON' }}
+            </button>
+            <pre style="white-space: pre-wrap; margin: 0; background: #fafafa; padding: 4px; border-radius: 2px; font-size: 11px; overflow-x: auto;">{{ rawResponseJson }}</pre>
+          </div>
+        </details>
       </div>
     </details>
   </div>
@@ -82,6 +104,7 @@ interface Props {
 
 const props = defineProps<Props>()
 const evidenceMode = ref(false)
+const copied = ref(false)
 
 const convId = computed(() => {
   return safeGet(props.response.meta, 'conversation_id', 'unknown')
@@ -102,6 +125,22 @@ const stateWrite = computed(() => {
 const stateStatus = computed(() => {
   return safeGet(stateWrite.value, 'status', 'unknown')
 })
+
+const rawResponseJson = computed(() => {
+  return formatJson(props.response)
+})
+
+async function copyRawResponse() {
+  try {
+    await navigator.clipboard.writeText(rawResponseJson.value)
+    copied.value = true
+    setTimeout(() => {
+      copied.value = false
+    }, 1200)
+  } catch {
+    copied.value = false
+  }
+}
 
 function formatJson(obj: any): string {
   if (!obj) return '{}'
