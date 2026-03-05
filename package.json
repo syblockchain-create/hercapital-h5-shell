@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc -b && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test:extractors": "tsc -p tsconfig.extractors.json && node .tmp-extractors/scripts/extractors-smoke.js"
   },
   "dependencies": {
     "vue": "^3.5.25"
