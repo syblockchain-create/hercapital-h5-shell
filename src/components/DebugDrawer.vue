@@ -43,7 +43,29 @@
           <div style="opacity: 0.7;">
             <div>conversation_id: {{ convId }}</div>
             <div>version_id: {{ versionId }}</div>
-            <div>git_commit: {{ gitCommit }}</div>
+            <div>meta.git_commit: {{ gitCommit }}</div>
+          </div>
+        </div>
+
+        <!-- Build Info -->
+        <div style="margin-bottom: 12px;">
+          <div style="font-weight: 600; margin-bottom: 4px;">Build</div>
+          <div style="opacity: 0.7;">
+            <div>debug.build.commit: {{ buildCommit }}</div>
+            <div>commit_source: {{ buildSource }}</div>
+            <div>built_at: {{ builtAt }}</div>
+          </div>
+        </div>
+
+        <!-- 验收关键字段 -->
+        <div style="margin-bottom: 12px;">
+          <div style="font-weight: 600; margin-bottom: 4px;">验收字段</div>
+          <div style="opacity: 0.7;">
+            <div>next_scene_id: {{ nextSceneId || '(未返回)' }}</div>
+            <div>next_scene_display: {{ nextSceneDisplay || '(未返回)' }}</div>
+            <div>day7_reviewed_at: {{ day7ReviewedAt || '(未返回)' }}</div>
+            <div>skip_reason: {{ skipReason || '(无)' }}</div>
+            <div>cards count: {{ (response.cards || []).length }}</div>
           </div>
         </div>
 
@@ -116,6 +138,36 @@ const versionId = computed(() => {
 
 const gitCommit = computed(() => {
   return safeGet(props.response.meta, 'git_commit', 'N/A')
+})
+
+const buildCommit = computed(() => {
+  return safeGet(props.response.debug, 'build.commit', 'N/A')
+})
+
+const buildSource = computed(() => {
+  return safeGet(props.response.debug, 'build.commit_source', 'N/A')
+})
+
+const builtAt = computed(() => {
+  return safeGet(props.response.debug, 'build.built_at', 'N/A')
+})
+
+const nextSceneId = computed(() => {
+  return safeGet(props.response.meta, 'next_scene_id', '') ||
+    safeGet(props.response.debug, 'state_write.next_scene_id', '')
+})
+
+const nextSceneDisplay = computed(() => {
+  return safeGet(props.response.meta, 'next_scene_display', '')
+})
+
+const day7ReviewedAt = computed(() => {
+  return safeGet(props.response.meta, 'day7_reviewed_at', '') ||
+    safeGet(props.response.debug, 'state_write.day7_reviewed_at', '')
+})
+
+const skipReason = computed(() => {
+  return safeGet(props.response.meta, 'skip_reason', '')
 })
 
 const stateWrite = computed(() => {

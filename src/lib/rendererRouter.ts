@@ -8,12 +8,13 @@ export function safeGet<T = any>(obj: any, path: string, defaultValue: T): T {
 }
 
 // Renderer type (avoid enum for erasableSyntaxOnly compatibility)
-export type RendererType = 'preview' | 'doing' | 'status' | 'fallback'
+export type RendererType = 'preview' | 'doing' | 'status' | 'review_day7' | 'fallback'
 
 export const RENDERER_TYPE = {
   PREVIEW: 'preview' as const,
   DOING: 'doing' as const,
   STATUS: 'status' as const,
+  REVIEW_DAY7: 'review_day7' as const,
   FALLBACK: 'fallback' as const
 }
 
@@ -60,9 +61,15 @@ export function detectRendererType(resp: HCResponse): RendererType {
       console.debug('[Router] Matched by card.type=doing_card')
       return RENDERER_TYPE.DOING
     }
-    if (card.type === 'status_card') {
-      console.debug('[Router] Matched by card.type=status_card')
+    if (card.type === 'status_card' || card.type === 'verify_done_card') {
+      console.debug(`[Router] Matched by card.type=${card.type} → status`)
       return RENDERER_TYPE.STATUS
+    }
+    if (card.type === 'completion_summary_card' ||
+        card.type === 'next_action_card' ||
+        card.type === 'next_scene_card') {
+      console.debug(`[Router] Matched by card.type=${card.type} → review_day7`)
+      return RENDERER_TYPE.REVIEW_DAY7
     }
   }
 
@@ -81,6 +88,10 @@ export function detectRendererType(resp: HCResponse): RendererType {
   if (route === 'status' || phase === 'status') {
     console.debug('[Router] Matched by meta.route/phase=status')
     return RENDERER_TYPE.STATUS
+  }
+  if (phase === 'review' || route === 'review') {
+    console.debug('[Router] Matched by meta.route/phase=review → review_day7')
+    return RENDERER_TYPE.REVIEW_DAY7
   }
 
   // Priority C: Heuristic on header content

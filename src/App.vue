@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import PreviewView from './components/PreviewView.vue'
 import DoingView from './components/DoingView.vue'
 import StatusView from './components/StatusView.vue'
+import ReviewDay7View from './components/ReviewDay7View.vue'
 import FallbackView from './components/FallbackView.vue'
 import DebugDrawer from './components/DebugDrawer.vue'
 import {
@@ -115,6 +116,12 @@ const rendererName = () => {
         :loading="loading"
         :onAction="clickAction"
       />
+      <ReviewDay7View
+        v-else-if="currentRenderer() === 'review_day7'"
+        :response="resp"
+        :loading="loading"
+        :onAction="clickAction"
+      />
       <FallbackView
         v-else
         :response="resp"
@@ -137,6 +144,7 @@ const rendererName = () => {
       <button @click="send('朋友找我借钱我很纠结')" :disabled="loading" style="padding: 6px 12px; background: #e0e0e0; border: none; border-radius: 4px; cursor: pointer; font-size: 12px;">借钱</button>
       <button @click="send('我买了个包很开心但担心超预算')" :disabled="loading" style="padding: 6px 12px; background: #e0e0e0; border: none; border-radius: 4px; cursor: pointer; font-size: 12px;">超预算</button>
       <button @click="send('status:show')" :disabled="loading" style="padding: 6px 12px; background: #e0e0e0; border: none; border-radius: 4px; cursor: pointer; font-size: 12px;">status:show</button>
+      <button @click="send('review:day7')" :disabled="loading" style="padding: 6px 12px; background: #e0e0e0; border: none; border-radius: 4px; cursor: pointer; font-size: 12px;">review:day7</button>
     </div>
 
     <!-- Debug Drawer & Evidence Mode -->
@@ -144,7 +152,7 @@ const rendererName = () => {
       v-if="resp"
       :response="resp"
       :renderer="rendererName()"
-      :lastRequest="lastRequest?.value ?? undefined"
+      :lastRequest="lastRequest ?? undefined"
     />
   </div>
 </template>
